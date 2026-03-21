@@ -14,6 +14,7 @@ import java.util.List;
 public class ScreeningDto {
     private Long id;
     private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private Long hallId;
     private Long movieId;
     private List<Long> bookingIds = new ArrayList<>();

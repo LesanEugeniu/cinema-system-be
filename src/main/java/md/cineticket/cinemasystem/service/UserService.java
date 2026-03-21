@@ -46,7 +46,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public User saveUser(RegisterRequest request) {
+    public User createUser(RegisterRequest request) {
         User user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))

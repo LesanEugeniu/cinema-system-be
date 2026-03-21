@@ -26,6 +26,10 @@ public class Screening {
     @EqualsAndHashCode.Include
     private LocalDateTime startTime;
 
+    @Column(nullable = false)
+    @EqualsAndHashCode.Include
+    private LocalDateTime endTime;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "hall_id", nullable = false)
     @EqualsAndHashCode.Include

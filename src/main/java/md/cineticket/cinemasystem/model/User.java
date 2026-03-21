@@ -35,4 +35,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Booking> bookings = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
+
 }

@@ -3,6 +3,8 @@ package md.cineticket.cinemasystem.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import md.cineticket.cinemasystem.dto.ChangePasswordRequest;
+import md.cineticket.cinemasystem.dto.RegisterRequest;
+import md.cineticket.cinemasystem.model.Role;
 import md.cineticket.cinemasystem.model.User;
 import md.cineticket.cinemasystem.repo.UserRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,9 +23,9 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public User findByUserName(String username) {
-        User result = userRepository.findUserByUsername(username).orElseThrow(() ->
-                new UsernameNotFoundException("User with username " + username + " not found"));
+    public User findByEmail(String username) {
+        User result = userRepository.findByEmail(username).orElseThrow(() ->
+                new UsernameNotFoundException("User with email " + username + " not found"));
         log.info("IN findByUserName - user: {} found by username: {}", result, username);
         return result;
     }
@@ -44,4 +46,14 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public User saveUser(RegisterRequest request) {
+        User user = User.builder()
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .username(request.getUsername())
+                .role(Role.USER)
+                .build();
+
+        return userRepository.save(user);
+    }
 }

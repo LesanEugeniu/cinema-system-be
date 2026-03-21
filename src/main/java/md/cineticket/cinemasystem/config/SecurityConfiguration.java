@@ -34,8 +34,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
-                                .requestMatchers("/api/v1/test/**").hasAnyRole(ADMIN.name()) //TODO
-                                .anyRequest()
+//                                .requestMatchers("/api/v1/test").hasAnyRole(ADMIN.name())
+//                                .anyRequest()
+                                .requestMatchers("/api/v1/test")
                                 .authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

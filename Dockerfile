@@ -2,6 +2,8 @@ FROM amazoncorretto:21
 
 ARG JAR_FILE=target/*.jar
 
+RUN mkdir -p /app/uploads/movies
+
 COPY ${JAR_FILE} app.jar
 
 CMD apt-get update -y

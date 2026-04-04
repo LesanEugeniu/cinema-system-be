@@ -1,16 +1,21 @@
 package md.cineticket.cinemasystem.controller;
 
 import lombok.RequiredArgsConstructor;
+import md.cineticket.cinemasystem.dto.MovieByScreeningDto;
 import md.cineticket.cinemasystem.dto.MovieDto;
+import md.cineticket.cinemasystem.dto.MovieSearchDto;
 import md.cineticket.cinemasystem.service.MovieService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.List;
 
 @RestController
@@ -61,6 +66,30 @@ public class MovieController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         movieService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/image/{filename:.+}")
+    public ResponseEntity<org.springframework.core.io.Resource> getImage(@PathVariable String filename) throws MalformedURLException {
+        org.springframework.core.io.Resource resource = movieService.getResource(filename);
+        String contentType = movieService.getContentType(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, contentType)
+                .body(resource);
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<Page<MovieDto>> search(@RequestBody MovieSearchDto searchDto,
+                                                 @RequestParam(defaultValue = "0") int page,
+                                                 @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<MovieDto> movies = movieService.search(searchDto, pageable);
+        return ResponseEntity.ok(movies);
+    }
+
+    @PostMapping("/by-screening")
+    public ResponseEntity<List<MovieDto>> getMoviesByScreening(@RequestBody MovieByScreeningDto dto) {
+        List<MovieDto> movies = movieService.getMoviesByScreeningRange(dto);
+        return ResponseEntity.ok(movies);
     }
 
 }

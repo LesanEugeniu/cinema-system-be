@@ -1,5 +1,6 @@
 package md.cineticket.cinemasystem.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import md.cineticket.cinemasystem.dto.ActorDto;
 import md.cineticket.cinemasystem.dto.DtoMapper;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ActorService {
 
     private final ActorRepository actorRepository;
@@ -63,6 +65,7 @@ public class ActorService {
             if (actors.size() != actorIds.size()) {
                 throw new CinemaException(HttpStatus.BAD_REQUEST.value(), "Some actors not found");
             }
+            return actors;
         }
 
         return Collections.emptyList();

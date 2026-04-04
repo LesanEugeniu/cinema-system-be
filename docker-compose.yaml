@@ -13,6 +13,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=verYs3cret
       - POSTGRES_SCHEMA=cinema
+    volumes:
+      - ./uploads:/app/uploads
   postgres:
     image: 'postgres:latest'
     environment:

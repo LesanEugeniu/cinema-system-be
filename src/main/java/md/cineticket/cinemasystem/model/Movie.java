@@ -74,6 +74,7 @@ public class Movie {
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "director_id")
     )
+    @Builder.Default
     private List<Director> directors = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -82,5 +83,17 @@ public class Movie {
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "actor_id")
     )
+    @Builder.Default
     private List<Actor> actors = new ArrayList<>();
+
+    public void addDirector(Director director) {
+        this.getDirectors().add(director);
+        director.getMovies().add(this);
+    }
+
+    public void addActor(Actor actor) {
+        this.getActors().add(actor);
+        actor.getMovies().add(this);
+    }
+
 }

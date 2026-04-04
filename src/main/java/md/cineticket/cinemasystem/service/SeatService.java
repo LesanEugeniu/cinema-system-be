@@ -1,5 +1,6 @@
 package md.cineticket.cinemasystem.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import md.cineticket.cinemasystem.dto.DtoMapper;
 import md.cineticket.cinemasystem.dto.SeatDto;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class SeatService {
 
     private final SeatRepository seatRepository;

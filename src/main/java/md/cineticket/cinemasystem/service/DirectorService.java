@@ -1,5 +1,6 @@
 package md.cineticket.cinemasystem.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import md.cineticket.cinemasystem.dto.DirectorDto;
 import md.cineticket.cinemasystem.dto.DtoMapper;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class DirectorService {
 
     private final DirectorRepository directorRepository;
@@ -78,6 +80,7 @@ public class DirectorService {
             if (directors.size() != directorIds.size()) {
                 throw new CinemaException(HttpStatus.BAD_REQUEST.value(), "Some directors not found");
             }
+            return directors;
         }
 
         return Collections.emptyList();

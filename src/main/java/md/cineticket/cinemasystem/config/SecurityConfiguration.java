@@ -13,6 +13,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 import static md.cineticket.cinemasystem.model.Role.ADMIN;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -49,12 +54,15 @@ public class SecurityConfiguration {
     private final LogoutHandler logoutHandler;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> {})
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .anonymous().requestMatchers(HttpMethod.GET, API_LIST_URL)
+                                .anonymous().requestMatchers(HttpMethod.POST, "/api/v1/movies/search")
+                                .anonymous().requestMatchers(HttpMethod.POST, "/api/v1/movies/by-screening")
                                 .permitAll()
                                 .requestMatchers(HttpMethod.POST, API_LIST_URL).hasAnyRole(ADMIN.name())
                                 .requestMatchers(HttpMethod.PUT, API_LIST_URL).hasAnyRole(ADMIN.name())
@@ -75,4 +83,18 @@ public class SecurityConfiguration {
 
         return http.build();
     }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 }

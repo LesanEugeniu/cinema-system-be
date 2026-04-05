@@ -6,7 +6,9 @@ import md.cineticket.cinemasystem.dto.ActorDto;
 import md.cineticket.cinemasystem.dto.DtoMapper;
 import md.cineticket.cinemasystem.exception.CinemaException;
 import md.cineticket.cinemasystem.model.Actor;
+import md.cineticket.cinemasystem.model.Movie;
 import md.cineticket.cinemasystem.repo.ActorRepository;
+import md.cineticket.cinemasystem.repo.MovieRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ public class ActorService {
 
     private final ActorRepository actorRepository;
     private final DtoMapper dtoMapper;
+    private final MovieRepository movieRepository;
 
     public ActorDto create(ActorDto dto) {
         Actor actor = dtoMapper.toEntity(dto);
@@ -53,10 +57,18 @@ public class ActorService {
     }
 
     public void delete(Long id) {
-        if (!actorRepository.existsById(id)) {
-            throw new CinemaException(HttpStatus.BAD_REQUEST.value(), "Actor not found");
+        Actor actor = actorRepository.findById(id)
+                .orElseThrow(() -> new CinemaException(
+                        HttpStatus.BAD_REQUEST.value(), "Actor not found"
+                ));
+
+        for (Movie movie : actor.getMovies()) {
+            movie.getActors().remove(actor);
         }
-        actorRepository.deleteById(id);
+
+        actor.getMovies().clear();
+
+        actorRepository.delete(actor);
     }
 
     public List<Actor> findAllById(List<Long> actorIds) {

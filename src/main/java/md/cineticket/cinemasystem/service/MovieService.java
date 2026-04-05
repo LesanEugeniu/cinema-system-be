@@ -112,6 +112,7 @@ public class MovieService {
         if (!movieRepository.existsById(id)) {
             throw new CinemaException(HttpStatus.BAD_REQUEST.value(), "Movie not found");
         }
+        screeningRepository.deleteAllByMovie_Id(id);
         movieRepository.deleteById(id);
     }
 

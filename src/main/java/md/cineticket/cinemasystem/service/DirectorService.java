@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -68,10 +69,18 @@ public class DirectorService {
     }
 
     public void delete(Long id) {
-        if (!directorRepository.existsById(id)) {
-            throw new CinemaException(HttpStatus.BAD_REQUEST.value(), "Director not found");
+        Director director = directorRepository.findById(id)
+                .orElseThrow(() -> new CinemaException(
+                        HttpStatus.BAD_REQUEST.value(), "Director not found"
+                ));
+
+        for (Movie movie : director.getMovies()) {
+            movie.getDirectors().remove(director);
         }
-        directorRepository.deleteById(id);
+
+        director.getMovies().clear();
+
+        directorRepository.delete(director);
     }
 
     public List<Director> findAllById(List<Long> directorIds) {

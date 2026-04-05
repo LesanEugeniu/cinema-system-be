@@ -20,4 +20,6 @@ public interface ScreeningRepository extends JpaRepository<Screening, Long> {
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
+
+    void deleteAllByMovie_Id(Long movieId);
 }

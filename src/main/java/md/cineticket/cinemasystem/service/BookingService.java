@@ -6,6 +6,7 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.AreaBreak;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.properties.TextAlignment;
+import io.micrometer.observation.ObservationFilter;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +21,13 @@ import md.cineticket.cinemasystem.repo.ScreeningRepository;
 import md.cineticket.cinemasystem.repo.UserRepository;
 import md.cineticket.cinemasystem.security.SeatRepository;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.OutputStream;
+import java.security.Principal;
 import java.util.List;
 
 @Service
@@ -129,6 +132,10 @@ public class BookingService {
             throw new CinemaException(HttpStatus.FORBIDDEN.value(), "No acces for this user");
         }
         ticketPdfGenerator.generateTicketsPdf(booking, outputStream);
+    }
+
+    public Page<BookingDto> getBookingsByUser(String userEmail, Pageable pageable) {
+        return bookingRepository.findAllByUser_Email(userEmail, pageable).map(dtoMapper::toDto);
     }
 
 }

@@ -35,7 +35,6 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class TicketPdfGenerator {
-    private final BookingService bookingService;
 
     private static final Color VIOLET_DARK   = new DeviceRgb(0x3D, 0x00, 0x6B);
     private static final Color VIOLET_MED    = new DeviceRgb(0x6A, 0x0D, 0xAD);
@@ -73,8 +72,8 @@ public class TicketPdfGenerator {
                 addHeader(document);
                 addMovieInfo(document, screening);
                 addDivider(document);
-                addSeatInfo(document, seat, bookingId, screening);
-                addQrCode(document, bookingId, seat);
+                addSeatInfo(document, seat, booking.getId(), screening);
+                addQrCode(document, booking.getId(), seat);
                 addFooter(document);
             }
 

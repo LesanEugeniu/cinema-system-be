@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import md.cineticket.cinemasystem.dto.BookingDto;
 import md.cineticket.cinemasystem.service.BookingService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -73,6 +74,16 @@ public class BookingController {
         } catch (Exception e) {
             throw new RuntimeException("Eroare la generarea PDF: " + e.getMessage(), e);
         }
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<Page<BookingDto>> getBookingsByUser(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Principal principal
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(bookingService.getBookingsByUser(principal.getName(), pageable));
     }
 
 }

@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import md.cineticket.cinemasystem.dto.BookingDto;
 import md.cineticket.cinemasystem.service.BookingService;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -22,8 +21,8 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    public ResponseEntity<BookingDto> create(@RequestBody BookingDto dto) {
-        BookingDto created = bookingService.create(dto);
+    public ResponseEntity<BookingDto> create(@RequestBody BookingDto dto, Principal principal) {
+        BookingDto created = bookingService.create(dto, principal.getName());
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
@@ -77,13 +76,12 @@ public class BookingController {
     }
 
     @GetMapping("/my")
-    public ResponseEntity<Page<BookingDto>> getBookingsByUser(
+    public ResponseEntity<List<BookingDto>> getBookingsByUser(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             Principal principal
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(bookingService.getBookingsByUser(principal.getName(), pageable));
+        return ResponseEntity.ok(bookingService.getBookingsByUser(principal.getName()));
     }
 
 }

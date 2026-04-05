@@ -1,12 +1,5 @@
 package md.cineticket.cinemasystem.service;
 
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.AreaBreak;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.properties.TextAlignment;
-import io.micrometer.observation.ObservationFilter;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,20 +7,14 @@ import md.cineticket.cinemasystem.dto.BookingDto;
 import md.cineticket.cinemasystem.dto.DtoMapper;
 import md.cineticket.cinemasystem.exception.CinemaException;
 import md.cineticket.cinemasystem.model.Booking;
-import md.cineticket.cinemasystem.model.Screening;
-import md.cineticket.cinemasystem.model.Seat;
 import md.cineticket.cinemasystem.repo.BookingRepository;
 import md.cineticket.cinemasystem.repo.ScreeningRepository;
 import md.cineticket.cinemasystem.repo.UserRepository;
 import md.cineticket.cinemasystem.security.SeatRepository;
-import org.jspecify.annotations.NonNull;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.io.OutputStream;
-import java.security.Principal;
 import java.util.List;
 
 @Service
@@ -42,10 +29,9 @@ public class BookingService {
     private final DtoMapper dtoMapper;
     private final TicketPdfGenerator ticketPdfGenerator;
 
-    public BookingDto create(BookingDto dto) {
+    public BookingDto create(BookingDto dto, String email) {
         Booking booking = dtoMapper.toEntity(dto);
-
-        var user = userRepository.findById(dto.getUserId())
+        var user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CinemaException(HttpStatus.BAD_REQUEST.value(), "User not found"));
         booking.setUser(user);
 
@@ -134,8 +120,8 @@ public class BookingService {
         ticketPdfGenerator.generateTicketsPdf(booking, outputStream);
     }
 
-    public Page<BookingDto> getBookingsByUser(String userEmail, Pageable pageable) {
-        return bookingRepository.findAllByUser_Email(userEmail, pageable).map(dtoMapper::toDto);
+    public List<BookingDto> getBookingsByUser(String userEmail) {
+        return bookingRepository.findAllByUser_Email(userEmail).stream().map(dtoMapper::toDto).toList();
     }
 
 }

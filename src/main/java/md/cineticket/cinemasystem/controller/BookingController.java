@@ -1,5 +1,6 @@
 package md.cineticket.cinemasystem.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import md.cineticket.cinemasystem.dto.BookingDto;
 import md.cineticket.cinemasystem.service.BookingService;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -51,4 +53,26 @@ public class BookingController {
         bookingService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/by-screening/{id}")
+    public ResponseEntity<List<BookingDto>> getBookingsByScreeningId(@PathVariable Long id) {
+        return ResponseEntity.ok(bookingService.getBookingsByScreeningId(id));
+    }
+
+    @GetMapping("/{bookingId}/tickets/pdf")
+    public void downloadTicketsPdf(@PathVariable Long bookingId,
+                                   HttpServletResponse response,
+                                   Principal principal
+    ) {
+        try {
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition",
+                    "attachment; filename=tickets_" + bookingId + ".pdf");
+
+            bookingService.generateTicketsPdf(bookingId, response.getOutputStream(), principal.getName());
+        } catch (Exception e) {
+            throw new RuntimeException("Eroare la generarea PDF: " + e.getMessage(), e);
+        }
+    }
+
 }

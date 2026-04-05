@@ -22,16 +22,21 @@ public interface DtoMapper {
 
     HallDto toDto(Hall saved);
 
+    @Mapping(target = "hallId", expression = "java(saved.getHall().getId())")
     SeatDto toDto(Seat saved);
 
     Seat toEntity(SeatDto dto);
 
     Screening toEntity(ScreeningDto dto);
 
+    @Mapping(target = "movieId", expression = "java(saved.getMovie().getId())")
+    @Mapping(target = "hallId", expression = "java(saved.getHall().getId())")
+    @Mapping(target = "bookingIds", expression = "java(getScreeningIds(saved))")
     ScreeningDto toDto(Screening saved);
 
     Booking toEntity(BookingDto dto);
 
+    @Mapping(target = "seatIds", expression = "java(getSeatIds(saved))")
     BookingDto toDto(Booking saved);
 
     @Mapping(target = "directorIds", expression = "java(getDirectorIds(movie))")
@@ -51,6 +56,20 @@ public interface DtoMapper {
         if (movie.getActors() == null) return null;
         return movie.getActors().stream()
                 .map(Actor::getId)
+                .collect(Collectors.toList());
+    }
+
+    default List<Long> getScreeningIds(Screening screening) {
+        if (screening.getBookings() == null) return null;
+        return screening.getBookings().stream()
+                .map(Booking::getId)
+                .collect(Collectors.toList());
+    }
+
+    default List<Long> getSeatIds(Booking booking) {
+        if (booking.getSeats() == null) return null;
+        return booking.getSeats().stream()
+                .map(Seat::getId)
                 .collect(Collectors.toList());
     }
 

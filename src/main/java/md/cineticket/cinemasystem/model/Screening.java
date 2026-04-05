@@ -30,17 +30,17 @@ public class Screening {
     @EqualsAndHashCode.Include
     private LocalDateTime endTime;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "hall_id", nullable = false)
     @EqualsAndHashCode.Include
     private Hall hall;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "movie_id", nullable = false)
     @EqualsAndHashCode.Include
     private Movie movie;
 
-    @OneToMany(mappedBy = "screening", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "screening", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Booking> bookings = new ArrayList<>();
 
 }

@@ -7,6 +7,7 @@ import md.cineticket.cinemasystem.dto.ScreeningDto;
 import md.cineticket.cinemasystem.exception.CinemaException;
 import md.cineticket.cinemasystem.model.Screening;
 import md.cineticket.cinemasystem.repo.ScreeningRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

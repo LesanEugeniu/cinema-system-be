@@ -161,7 +161,7 @@ public class MovieService {
     }
 
     public List<MovieDto> getMoviesByScreeningRange(MovieByScreeningDto dto) {
-        List<Screening> screenings = screeningRepository.findByStartTimeBetween(dto.getStartDate(), dto.getEndDate());
+        List<Screening> screenings = screeningRepository.findOverlappingScreenings(dto.getStartDate(), dto.getEndDate());
 
         return screenings.stream()
                 .map(Screening::getMovie)

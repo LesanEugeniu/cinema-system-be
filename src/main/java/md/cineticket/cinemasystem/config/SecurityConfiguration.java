@@ -20,6 +20,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 import static md.cineticket.cinemasystem.model.Role.ADMIN;
+import static md.cineticket.cinemasystem.model.Role.USER;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -28,8 +29,15 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableMethodSecurity
 public class SecurityConfiguration {
 
-    private static final String[] WHITE_LIST_URL = {
-            "/api/v1/auth/**",
+    private static final String[] API_LIST_URL_PERMIT_ALL = {
+            "/api/v1/actors/**",
+            "/api/v1/actors",
+            "/api/v1/directors/**",
+            "/api/v1/directors",
+            "/api/v1/movies/**",
+            "/api/v1/movies",
+            "/api/v1/screenings/**",
+            "/api/v1/screenings",
     };
 
     private static final String[] API_LIST_URL = {
@@ -59,16 +67,22 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> {})
                 .authorizeHttpRequests(req ->
-                        req.requestMatchers(WHITE_LIST_URL)
-                                .anonymous().requestMatchers(HttpMethod.GET, API_LIST_URL)
-                                .anonymous().requestMatchers(HttpMethod.POST, "/api/v1/movies/search")
-                                .anonymous().requestMatchers(HttpMethod.POST, "/api/v1/movies/by-screening")
-                                .permitAll()
-                                .requestMatchers(HttpMethod.POST, API_LIST_URL).hasAnyRole(ADMIN.name())
-                                .requestMatchers(HttpMethod.PUT, API_LIST_URL).hasAnyRole(ADMIN.name())
-                                .requestMatchers(HttpMethod.DELETE, API_LIST_URL).hasAnyRole(ADMIN.name())
-                                .anyRequest()
-                                .authenticated()
+                        req
+                                .requestMatchers("/api/v1/auth/**").permitAll()
+
+                                // public GET endpoints
+                                .requestMatchers(HttpMethod.GET, API_LIST_URL_PERMIT_ALL).permitAll()
+
+                                .requestMatchers(HttpMethod.POST, "/api/v1/movies/search").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/v1/movies/by-screening").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/v1/bookings").permitAll()
+
+                                // admin only
+                                .requestMatchers(HttpMethod.POST, API_LIST_URL).hasRole(ADMIN.name())
+                                .requestMatchers(HttpMethod.PUT, API_LIST_URL).hasRole(ADMIN.name())
+                                .requestMatchers(HttpMethod.DELETE, API_LIST_URL).hasRole(ADMIN.name())
+
+                                .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)

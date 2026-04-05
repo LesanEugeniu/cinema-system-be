@@ -1,19 +1,30 @@
 package md.cineticket.cinemasystem.service;
 
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.AreaBreak;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.properties.TextAlignment;
+import jakarta.servlet.ServletOutputStream;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import md.cineticket.cinemasystem.dto.BookingDto;
 import md.cineticket.cinemasystem.dto.DtoMapper;
 import md.cineticket.cinemasystem.exception.CinemaException;
 import md.cineticket.cinemasystem.model.Booking;
+import md.cineticket.cinemasystem.model.Screening;
+import md.cineticket.cinemasystem.model.Seat;
 import md.cineticket.cinemasystem.repo.BookingRepository;
 import md.cineticket.cinemasystem.repo.ScreeningRepository;
 import md.cineticket.cinemasystem.repo.UserRepository;
 import md.cineticket.cinemasystem.security.SeatRepository;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.io.OutputStream;
 import java.util.List;
 
 @Service
@@ -26,6 +37,7 @@ public class BookingService {
     private final ScreeningRepository screeningRepository;
     private final SeatRepository seatRepository;
     private final DtoMapper dtoMapper;
+    private final TicketPdfGenerator ticketPdfGenerator;
 
     public BookingDto create(BookingDto dto) {
         Booking booking = dtoMapper.toEntity(dto);
@@ -58,14 +70,12 @@ public class BookingService {
     }
 
     public BookingDto getById(Long id) {
-        Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new CinemaException(HttpStatus.BAD_REQUEST.value(), "Booking not found"));
+        Booking booking = getBookingEntity(id);
         return dtoMapper.toDto(booking);
     }
 
     public BookingDto update(Long id, BookingDto dto) {
-        Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new CinemaException(HttpStatus.BAD_REQUEST.value(), "Booking not found"));
+        Booking booking = getBookingEntity(id);
 
         if (dto.getUserId() != null) {
             var user = userRepository.findById(dto.getUserId())
@@ -100,4 +110,25 @@ public class BookingService {
         }
         bookingRepository.deleteById(id);
     }
+
+    public List<BookingDto> getBookingsByScreeningId(Long id) {
+        return bookingRepository.findAllByScreeningId(id)
+                .stream()
+                .map(dtoMapper::toDto)
+                .toList();
+    }
+
+    public Booking getBookingEntity(Long bookingId) {
+        return bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new CinemaException(HttpStatus.BAD_REQUEST.value(), "Booking not found"));
+    }
+
+    public void generateTicketsPdf(Long bookingId, ServletOutputStream outputStream, String loggedUserEmail) {
+        Booking booking = getBookingEntity(bookingId);
+        if (!booking.getUser().getEmail().equals(loggedUserEmail)) {
+            throw new CinemaException(HttpStatus.FORBIDDEN.value(), "No acces for this user");
+        }
+        ticketPdfGenerator.generateTicketsPdf(booking, outputStream);
+    }
+
 }

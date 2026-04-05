@@ -31,7 +31,7 @@ public class Booking {
     @JoinColumn(name = "screening_id", nullable = false)
     private Screening screening;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "booking_seats",
             joinColumns = @JoinColumn(name = "booking_id"),

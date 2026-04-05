@@ -50,6 +50,11 @@ public class SeatService {
         return dtoMapper.toDto(seat);
     }
 
+    public List<SeatDto> getSeatsByHallId(Long id) {
+        List<Seat> seat = seatRepository.findByHallId(id);
+        return seat.stream().map(dtoMapper::toDto).toList();
+    }
+
     public SeatDto update(Long id, SeatDto dto) {
         Seat seat = seatRepository.findById(id)
                 .orElseThrow(() -> new CinemaException(HttpStatus.BAD_REQUEST.value(), "Seat not found"));

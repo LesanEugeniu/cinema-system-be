@@ -52,4 +52,9 @@ public class SeatController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/by-hall/{id}")
+    public ResponseEntity<List<SeatDto>> getSeatsByHallId(@PathVariable Long id) {
+        return ResponseEntity.ok(seatService.getSeatsByHallId(id));
+    }
+
 }

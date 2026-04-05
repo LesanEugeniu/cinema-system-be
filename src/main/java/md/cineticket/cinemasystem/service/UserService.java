@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -56,4 +57,10 @@ public class UserService {
 
         return userRepository.save(user);
     }
+
+    public String getEmailById(Long id) {
+        return userRepository.findById(id).orElseThrow(() ->
+                new UsernameNotFoundException("User not found")).getEmail();
+    }
+
 }

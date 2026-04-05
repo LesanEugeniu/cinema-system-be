@@ -78,6 +78,7 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.POST, "/api/v1/bookings").permitAll()
 
                                 // admin only
+                                .requestMatchers(HttpMethod.GET, "/api/v1/users/*").hasRole(ADMIN.name())
                                 .requestMatchers(HttpMethod.POST, API_LIST_URL).hasRole(ADMIN.name())
                                 .requestMatchers(HttpMethod.PUT, API_LIST_URL).hasRole(ADMIN.name())
                                 .requestMatchers(HttpMethod.DELETE, API_LIST_URL).hasRole(ADMIN.name())

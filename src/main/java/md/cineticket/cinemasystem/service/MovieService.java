@@ -87,22 +87,50 @@ public class MovieService {
     public MovieDto update(Long id, MovieDto dto) {
         Movie movie = getEntityById(id);
 
-        movie.setTitle(dto.getTitle());
-        movie.setImagePath(dto.getImagePath());
-        movie.setDescription(dto.getDescription());
-        movie.setDurationMinutes(dto.getDurationMinutes());
-        movie.setAgeRestriction(dto.getAgeRestriction());
-        movie.setGenre(dto.getGenre());
-        movie.setFormatType(dto.getFormatType());
-        movie.setSoundFormat(dto.getSoundFormat());
-        movie.setTrailerUrl(dto.getTrailerUrl());
-        movie.setReleaseDate(dto.getReleaseDate());
+        if (dto.getTitle() != null) {
+            movie.setTitle(dto.getTitle());
+        }
+        if (dto.getImagePath() != null) {
+            movie.setImagePath(dto.getImagePath());
+        }
+        if (dto.getDescription() != null) {
+            movie.setDescription(dto.getDescription());
+        }
+        if (dto.getDurationMinutes() != null) {
+            movie.setDurationMinutes(dto.getDurationMinutes());
+        }
+        if (dto.getAgeRestriction() != null) {
+            movie.setAgeRestriction(dto.getAgeRestriction());
+        }
+        if (dto.getGenre() != null) {
+            movie.setGenre(dto.getGenre());
+        }
+        if (dto.getFormatType() != null) {
+            movie.setFormatType(dto.getFormatType());
+        }
+        if (dto.getSoundFormat() != null) {
+            movie.setSoundFormat(dto.getSoundFormat());
+        }
+        if (dto.getTrailerUrl() != null) {
+            movie.setTrailerUrl(dto.getTrailerUrl());
+        }
+        if (dto.getReleaseDate() != null) {
+            movie.setReleaseDate(dto.getReleaseDate());
+        }
 
-        List<Director> directors = directorService.findAllById(dto.getDirectorIds());
-        directors.forEach(movie::addDirector);
-        List<Actor> actors = actorService.findAllById(dto.getActorIds());
-        actors.forEach(movie::addActor);
+        if (dto.getDirectorIds() != null) {
+            movie.getDirectors().clear();
 
+            List<Director> directors = directorService.findAllById(dto.getDirectorIds());
+            directors.forEach(movie::addDirector);
+        }
+
+        if (dto.getActorIds() != null) {
+            movie.getActors().clear();
+
+            List<Actor> actors = actorService.findAllById(dto.getActorIds());
+            actors.forEach(movie::addActor);
+        }
 
         Movie updated = movieRepository.save(movie);
         return dtoMapper.toDto(updated);

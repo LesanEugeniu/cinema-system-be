@@ -41,7 +41,9 @@ public class MovieController {
             @RequestPart("movie") MovieDto dto,
             @RequestPart(value = "image", required = false) MultipartFile image
     ) throws IOException {
-        dto.setImagePath(movieService.saveFile(image));
+        if (image != null) {
+            dto.setImagePath(movieService.saveFile(image));
+        }
         MovieDto updated = movieService.update(id, dto);
         return ResponseEntity.ok(updated);
     }

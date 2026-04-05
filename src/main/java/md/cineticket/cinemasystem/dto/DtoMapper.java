@@ -38,6 +38,7 @@ public interface DtoMapper {
 
     @Mapping(target = "seatIds", expression = "java(getSeatIds(saved))")
     @Mapping(target = "screeningId", expression = "java(saved.getScreening().getId())")
+    @Mapping(target = "userId", expression = "java(saved.getUser().getId())")
     BookingDto toDto(Booking saved);
 
     @Mapping(target = "directorIds", expression = "java(getDirectorIds(movie))")

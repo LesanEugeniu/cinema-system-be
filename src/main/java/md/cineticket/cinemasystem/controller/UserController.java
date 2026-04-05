@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import md.cineticket.cinemasystem.dto.ChangePasswordRequest;
 import md.cineticket.cinemasystem.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -26,4 +23,10 @@ public class UserController {
         service.changePassword(request, connectedUser);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<String> getUserEmailById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getEmailById(id));
+    }
+
 }
